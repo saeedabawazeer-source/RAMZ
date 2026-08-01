@@ -1,0 +1,15 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ramz app icon">
+  <rect x="8" y="8" width="240" height="240" rx="24" fill="#0B7A75"/>
+  <rect x="8" y="8" width="240" height="240" rx="24" fill="none" stroke="#131110" stroke-width="8"/>
+  <g fill="#F6EFE3">
+    <rect x="56" y="72" width="28" height="28"/>
+    <rect x="56" y="112" width="28" height="28"/>
+    <rect x="56" y="152" width="28" height="28"/>
+    <rect x="96" y="72" width="12" height="108"/>
+    <rect x="120" y="72" width="28" height="28"/>
+    <rect x="120" y="152" width="28" height="28"/>
+    <rect x="160" y="112" width="28" height="28"/>
+  </g>
+  <rect x="150" y="150" width="52" height="52" rx="6" fill="none" stroke="#FFB347" stroke-width="8"/>
+  <line x1="150" y1="176" x2="202" y2="176" stroke="#FFB347" stroke-width="6"/>
+</svg>
