@@ -82,3 +82,27 @@ export function extractDigitalCode(item: SallaOrderItem): string | null {
   if (item.codes && item.codes.length > 0) return item.codes[0];
   return null;
 }
+
+export interface SallaProduct {
+  id: number;
+  name: string;
+  // Salla's Product object exposes the live storefront URL in different
+  // places depending on API version — check both before giving up.
+  url?: string;
+  urls?: { customer?: string };
+}
+
+/** GET /products/{id} — https://docs.salla.dev/doc-462588 */
+export async function getProduct(accessToken: string, productId: string | number): Promise<SallaProduct> {
+  const res = await fetch(`${API_BASE}/products/${productId}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) throw new Error(`Get Product failed: ${res.status} ${await res.text()}`);
+  const json = await res.json();
+  return json.data as SallaProduct;
+}
+
+/** The one URL this whole app exists to turn into a scannable code. */
+export function resolveProductUrl(product: SallaProduct): string | null {
+  return product.urls?.customer ?? product.url ?? null;
+}
