@@ -217,7 +217,13 @@ export default async function ArabicHome() {
           </p>
           <div className="mx-auto grid max-w-[720px] gap-8 sm:grid-cols-3">
             <div className="text-center">
-              <ChatMock qrDataUrl={demoQrs[0]} caption="وصل الجديد 👀 امسح واحجز زوجك قبل ما ينفد." />
+              <ChatMock
+                qrDataUrl={demoQrs[0]}
+                caption="وصل الجديد 👀 امسح واحجز زوجك قبل ما ينفد."
+                storeName="متجرك"
+                statusLabel="متصل الآن"
+                timeLabel="٩:٤١ ص"
+              />
               <p className="mt-4 text-sm font-semibold">مشاركة عبر رسالة</p>
               <p className="text-xs text-ink/60">أرسله في رسالة جماعية أو خاصة بدل رابط مكتوب.</p>
             </div>
