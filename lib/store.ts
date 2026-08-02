@@ -82,6 +82,48 @@ export async function getMerchantToken(storeId: string): Promise<MerchantToken |
   };
 }
 
+export interface ZidMerchantToken {
+  storeId: string; // Zid's own store id (not namespaced — namespacing for product_qrs happens at the call site)
+  accessToken: string; // X-Manager-Token / Access-Token value
+  authorizationToken: string; // Authorization bearer value
+  refreshToken: string;
+  expiresAt: number; // epoch ms
+  storeDomain?: string | null; // used as a fallback to build product URLs if the Product API doesn't return one
+  plan?: "base" | "premium";
+}
+
+export async function saveZidMerchantToken(token: ZidMerchantToken) {
+  const { error } = await supabase.from("zid_merchant_tokens").upsert({
+    store_id: token.storeId,
+    access_token: token.accessToken,
+    authorization_token: token.authorizationToken,
+    refresh_token: token.refreshToken,
+    expires_at: token.expiresAt,
+    store_domain: token.storeDomain ?? null,
+    plan: token.plan ?? "base",
+  });
+  if (error) throw new Error(`saveZidMerchantToken failed: ${error.message}`);
+}
+
+export async function getZidMerchantToken(storeId: string): Promise<ZidMerchantToken | null> {
+  const { data, error } = await supabase
+    .from("zid_merchant_tokens")
+    .select("store_id, access_token, authorization_token, refresh_token, expires_at, store_domain, plan")
+    .eq("store_id", storeId)
+    .maybeSingle();
+  if (error) throw new Error(`getZidMerchantToken failed: ${error.message}`);
+  if (!data) return null;
+  return {
+    storeId: data.store_id,
+    accessToken: data.access_token,
+    authorizationToken: data.authorization_token,
+    refreshToken: data.refresh_token,
+    expiresAt: data.expires_at,
+    storeDomain: data.store_domain,
+    plan: data.plan ?? "base",
+  };
+}
+
 // --- Legacy (pre-pivot): QR/barcode for a digital order's redemption code.
 // Kept only so nothing breaks if old rows exist; the product-QR functions
 // below are what the app actually runs on now. Safe to drop once confirmed
