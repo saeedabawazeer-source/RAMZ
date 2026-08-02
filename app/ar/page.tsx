@@ -6,6 +6,7 @@ import { BrowserFrame } from "@/components/ui/BrowserFrame";
 import { QrMotif } from "@/components/brand/QrMotif";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
 import { FlyerMock } from "@/components/ui/FlyerMock";
+import { ChatMock } from "@/components/ui/ChatMock";
 import { BrickSignature } from "@/components/brand/BrickSignature";
 
 // Arabic mirror of app/page.tsx. Next.js's App Router only lets the root
@@ -214,16 +215,21 @@ export default async function ArabicHome() {
           <p className="mx-auto mb-10 max-w-[440px] text-center text-sm text-ink/60">
             ليس مجرد صورة مسطحة في لوحة تحكم — هذا شكل الكود فعليًا في العالم الحقيقي.
           </p>
-          <div className="mx-auto grid max-w-[420px] gap-10 sm:grid-cols-2">
+          <div className="mx-auto grid max-w-[720px] gap-8 sm:grid-cols-3">
+            <div className="text-center">
+              <ChatMock qrDataUrl={demoQrs[0]} caption="وصل الجديد 👀 امسح واحجز زوجك قبل ما ينفد." />
+              <p className="mt-4 text-sm font-semibold">مشاركة عبر رسالة</p>
+              <p className="text-xs text-ink/60">أرسله في رسالة جماعية أو خاصة بدل رابط مكتوب.</p>
+            </div>
+            <div className="text-center">
+              <FlyerMock qrDataUrl={demoQrs[0]} scanLabel="امسح لتشتري" productName={DEMO_PRODUCTS[0].name} tag="جديد" />
+              <p className="mt-4 text-sm font-semibold">على ملصق أو بوستر</p>
+              <p className="text-xs text-ink/60">اطبعه على عبوة، بوستر، أو بطاقة عمل.</p>
+            </div>
             <div className="text-center">
               <PhoneFrame qrDataUrl={demoQrs[0]} label="مسح عبر الجوال" />
               <p className="mt-4 text-sm font-semibold">مسح عبر الجوال</p>
               <p className="text-xs text-ink/60">وجّه الكاميرا نحوه، وستصل مباشرة لصفحة المنتج.</p>
-            </div>
-            <div className="text-center">
-              <FlyerMock qrDataUrl={demoQrs[0]} scanLabel="امسح لتشتري" />
-              <p className="mt-4 text-sm font-semibold">على ملصق أو بوستر</p>
-              <p className="text-xs text-ink/60">اطبعه على عبوة، بوستر، أو بطاقة عمل.</p>
             </div>
           </div>
         </div>
