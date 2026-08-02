@@ -104,8 +104,7 @@ export default async function ArabicHome() {
           </div>
 
           <div className="-rotate-1 rounded-brand border-[4px] border-ink bg-white p-5 shadow-brand-accent">
-            <div className="mb-1 text-sm font-semibold">{DEMO_PRODUCTS[0].name}</div>
-            <div className="mb-3 truncate font-mono text-xs text-teal underline" dir="ltr">{DEMO_PRODUCTS[0].url}</div>
+            <div className="mb-3 text-sm font-semibold">{DEMO_PRODUCTS[0].name}</div>
             <img src={demoQrs[0]} alt="مثال على كود QR" className="mb-3 h-40 w-40 rounded border-2 border-ink" />
             <span className="rounded bg-teal/10 px-2 py-1 font-mono text-[11px] text-teal-dark" dir="ltr">
               {DEMO_PRODUCTS[0].scans} scans
@@ -166,8 +165,7 @@ export default async function ArabicHome() {
             <div className="grid gap-4 sm:grid-cols-3">
               {DEMO_PRODUCTS.map((p, i) => (
                 <div key={p.name} className="rounded-brand border-[3px] border-ink bg-white p-4 shadow-brand">
-                  <div className="mb-1 text-sm font-semibold">{p.name}</div>
-                  <div className="mb-3 truncate font-mono text-xs text-teal underline" dir="ltr">{p.url}</div>
+                  <div className="mb-3 text-sm font-semibold">{p.name}</div>
                   <img src={demoQrs[i]} alt={`كود QR لـ ${p.name}`} className="mb-2 h-28 w-28 rounded border-2 border-ink" />
                   <span className="rounded bg-teal/10 px-2 py-1 font-mono text-[11px] text-teal-dark" dir="ltr">
                     {p.scans} scans
@@ -197,6 +195,13 @@ export default async function ArabicHome() {
                 )}
               </div>
               <p className="text-sm text-ink/70">{f.body}</p>
+              {f.title === "تصميم بألوانك" && (
+                <div className="mt-3 flex items-center gap-2 border-t border-ink/10 pt-3" dir="ltr">
+                  <img src={demoQrs[0]} alt="كود الباقة الأساسية" className="h-9 w-9 rounded border-2 border-ink" />
+                  <span className="text-ink/30" aria-hidden="true">→</span>
+                  <img src={brandedQr} alt="كود بريميوم بألوان العلامة" className="h-9 w-9 rounded border-2 border-ink" />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -206,10 +211,10 @@ export default async function ArabicHome() {
       <section className="border-y-[3px] border-ink bg-paper">
         <div className="mx-auto max-w-[1100px] px-6 py-14">
           <h2 className="mb-2 text-center font-display text-2xl font-bold">شاهده على أرض الواقع</h2>
-          <p className="mx-auto mb-10 max-w-[520px] text-center text-sm text-ink/60">
+          <p className="mx-auto mb-10 max-w-[440px] text-center text-sm text-ink/60">
             ليس مجرد صورة مسطحة في لوحة تحكم — هذا شكل الكود فعليًا في العالم الحقيقي.
           </p>
-          <div className="grid gap-8 sm:grid-cols-3">
+          <div className="mx-auto grid max-w-[420px] gap-10 sm:grid-cols-2">
             <div className="text-center">
               <PhoneFrame qrDataUrl={demoQrs[0]} label="مسح عبر الجوال" />
               <p className="mt-4 text-sm font-semibold">مسح عبر الجوال</p>
@@ -219,20 +224,6 @@ export default async function ArabicHome() {
               <FlyerMock qrDataUrl={demoQrs[0]} scanLabel="امسح لتشتري" />
               <p className="mt-4 text-sm font-semibold">على ملصق أو بوستر</p>
               <p className="text-xs text-ink/60">اطبعه على عبوة، بوستر، أو بطاقة عمل.</p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto flex w-[150px] items-center justify-center gap-3">
-                <div className="text-center">
-                  <img src={demoQrs[0]} alt="كود الباقة الأساسية" className="h-16 w-16 rounded border-2 border-ink" />
-                  <p className="mt-1 font-mono text-[10px] text-ink/50">أساسي</p>
-                </div>
-                <div className="text-center">
-                  <img src={brandedQr} alt="كود بريميوم بألوان العلامة" className="h-16 w-16 rounded border-2 border-ink" />
-                  <p className="mt-1 font-mono text-[10px] text-accent-dark">بريميوم</p>
-                </div>
-              </div>
-              <p className="mt-4 text-sm font-semibold">تصميم بألوانك</p>
-              <p className="text-xs text-ink/60">نفس الكود، بألوانك، في الباقة المميزة.</p>
             </div>
           </div>
         </div>
