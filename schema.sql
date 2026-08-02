@@ -28,3 +28,19 @@ create or replace function increment_scan_count(row_id text)
 returns void as $$
   update product_qrs set scan_count = scan_count + 1 where id = row_id;
 $$ language sql;
+
+-- Zid integration (added alongside app/api/oauth/zid/callback and
+-- app/api/webhooks/zid). Separate table from merchant_tokens because Zid's
+-- OAuth model needs two distinct tokens per store (Authorization + the
+-- X-Manager-Token/Access-Token), not one. Zid product rows live in the
+-- existing product_qrs table, namespaced via a "zid:<store_id>" store_id
+-- value so they can never collide with a Salla store id.
+create table if not exists zid_merchant_tokens (
+  store_id text primary key,
+  access_token text not null, -- X-Manager-Token / Access-Token value
+  authorization_token text not null, -- Authorization bearer value
+  refresh_token text not null,
+  expires_at bigint not null,
+  store_domain text,
+  plan text not null default 'base' -- 'base' | 'premium'
+);
