@@ -6,6 +6,7 @@ import { BrowserFrame } from "@/components/ui/BrowserFrame";
 import { QrMotif } from "@/components/brand/QrMotif";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
 import { FlyerMock } from "@/components/ui/FlyerMock";
+import { ChatMock } from "@/components/ui/ChatMock";
 import { BrickSignature } from "@/components/brand/BrickSignature";
 
 // Public marketing page — this is what a merchant sees if they land here from
@@ -215,16 +216,24 @@ export default async function Home() {
             Not just a flat image in a dashboard — here&rsquo;s what a code actually looks like out
             in the world.
           </p>
-          <div className="mx-auto grid max-w-[420px] gap-10 sm:grid-cols-2">
+          <div className="mx-auto grid max-w-[720px] gap-8 sm:grid-cols-3">
+            <div className="text-center">
+              <ChatMock
+                qrDataUrl={demoQrs[0]}
+                caption="Just dropped 👀 scan to grab a pair before they're gone."
+              />
+              <p className="mt-4 text-sm font-semibold">Shared in a message</p>
+              <p className="text-xs text-ink/60">Send it in a broadcast or DM instead of a typed-out link.</p>
+            </div>
+            <div className="text-center">
+              <FlyerMock qrDataUrl={demoQrs[0]} scanLabel="Scan to shop" productName={DEMO_PRODUCTS[0].name} />
+              <p className="mt-4 text-sm font-semibold">On a flyer or poster</p>
+              <p className="text-xs text-ink/60">Print it on packaging, a poster, or a business card.</p>
+            </div>
             <div className="text-center">
               <PhoneFrame qrDataUrl={demoQrs[0]} label="Scan on a phone" />
               <p className="mt-4 text-sm font-semibold">Scan on a phone</p>
               <p className="text-xs text-ink/60">Point a camera at it, land straight on the product.</p>
-            </div>
-            <div className="text-center">
-              <FlyerMock qrDataUrl={demoQrs[0]} scanLabel="Scan to shop" />
-              <p className="mt-4 text-sm font-semibold">On a flyer or poster</p>
-              <p className="text-xs text-ink/60">Print it on packaging, a poster, or a business card.</p>
             </div>
           </div>
         </div>
