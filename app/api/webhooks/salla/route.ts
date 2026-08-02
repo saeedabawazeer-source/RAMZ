@@ -20,19 +20,19 @@ import { saveMerchantToken, getMerchantToken, saveGeneratedCode } from "@/lib/st
  *      just the paid/completed status so this doesn't fire on unpaid orders.
  *      CONFIRM the exact event name in your portal before relying on this.
  *
- * TODO(security): Salla's docs state webhooks are verified via a "Signature
- * or Token strategy" but the exact header name/algorithm needs confirming
- * from your app's Webhook security settings in the Partners Portal before
- * this goes live — do not treat the check below as final until confirmed.
- */
-function isVerifiedWebhook(req: NextRequest, rawBody: string): boolean {
+ * Security strategy for this app is set to "Token" in the Partners Portal
+  * (App > Webhooks/Notifications). Salla sends the secret key value back in
+   * the Authorization header (sometimes prefixed with "Bearer "), so we just
+    * need an exact string match against SALLA_WEBHOOK_SECRET.
+     */
+function isVerifiedWebhook(req: NextRequest, _rawBody: string): boolean {
   const secret = process.env.SALLA_WEBHOOK_SECRET;
   if (!secret) return process.env.NODE_ENV !== "production"; // allow through in local dev only
-  const provided = req.headers.get("x-salla-security-strategy") ? req.headers.get("signature") : req.headers.get("authorization");
-  // Placeholder equality/HMAC check — replace with the exact scheme Salla's
-  // portal shows for your app once confirmed (see TODO above).
-  return Boolean(provided);
+  const authHeader = req.headers.get("authorization") || "";
+  const provided = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
+  return provided === secret;
 }
+
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
