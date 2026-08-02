@@ -36,12 +36,29 @@ function isVerifiedWebhook(req: NextRequest, rawBody: string): boolean {
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
+
+  // Log every single incoming request BEFORE any verification/parsing can
+  // reject or crash it — this is the only way to tell "Salla never called
+  // us" apart from "Salla called us and we silently rejected it".
+  console.log("Incoming Salla webhook", {
+    headers: Object.fromEntries(req.headers.entries()),
+    bodyPreview: rawBody.slice(0, 500),
+  });
+
   if (!isVerifiedWebhook(req, rawBody)) {
+    console.log("Rejected webhook as unverified");
     return NextResponse.json({ error: "unverified" }, { status: 401 });
   }
 
-  const payload = JSON.parse(rawBody);
+  let payload: any;
+  try {
+    payload = JSON.parse(rawBody);
+  } catch (err) {
+    console.error("Failed to parse webhook body as JSON", err);
+    return NextResponse.json({ error: "bad_json" }, { status: 400 });
+  }
   const event = payload.event as string;
+  console.log("Parsed webhook event", event);
 
   if (event === "app.store.authorize") {
     const { access_token, refresh_token, expires } = payload.data;
@@ -99,4 +116,10 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ ok: true, ignored: event });
+}
+
+// Lets you confirm the endpoint itself is reachable by just visiting the URL
+// in a browser — Salla only ever sends POST, so GET is otherwise unused.
+export async function GET() {
+  return NextResponse.json({ ok: true, note: "Webhook endpoint is reachable. Salla sends POST here." });
 }
