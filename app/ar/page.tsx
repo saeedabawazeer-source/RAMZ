@@ -1,9 +1,12 @@
 import { Smartphone, Package, Megaphone, Zap, Download, BarChart3, Palette } from "lucide-react";
-import { generateQrDataUrl } from "@/lib/qr";
+import { generateQrDataUrl, generateBrandedQrDataUrl } from "@/lib/qr";
 import { Logo } from "@/components/brand/Logo";
 import { Stamp } from "@/components/ui/Stamp";
 import { BrowserFrame } from "@/components/ui/BrowserFrame";
 import { QrMotif } from "@/components/brand/QrMotif";
+import { PhoneFrame } from "@/components/ui/PhoneFrame";
+import { FlyerMock } from "@/components/ui/FlyerMock";
+import { BrickSignature } from "@/components/brand/BrickSignature";
 
 // Arabic mirror of app/page.tsx. Next.js's App Router only lets the root
 // layout set <html>/<body>, so this page can't change the document-level
@@ -49,6 +52,7 @@ const FEATURES = [
 
 export default async function ArabicHome() {
   const demoQrs = await Promise.all(DEMO_PRODUCTS.map((p) => generateQrDataUrl(p.url)));
+  const brandedQr = await generateBrandedQrDataUrl(DEMO_PRODUCTS[0].url);
 
   return (
     <div dir="rtl" lang="ar" className="min-h-screen overflow-x-clip font-arabic">
@@ -75,12 +79,12 @@ export default async function ArabicHome() {
         <QrMotif className="pointer-events-none absolute -left-6 -top-6 h-40 w-40 text-teal/10 sm:h-56 sm:w-56" />
         <div className="relative grid gap-10 sm:grid-cols-2 sm:items-center">
           <div>
-            <Stamp className="mb-5">تطبيق سلة</Stamp>
+            <Stamp className="mb-5">بدون إعداد</Stamp>
             <h1 className="mb-4 font-display text-4xl font-bold leading-[1.15] sm:text-5xl">
               كل منتج، على بعد مسحة واحدة.
             </h1>
             <p className="mb-6 text-base leading-relaxed text-ink/70 sm:text-lg">
-              رمز يمنح كل منتج في متجرك على سلة — رقميًا كان أو ماديًا — كود QR قابل للمسح،
+              رمز يمنح كل منتج في متجرك — رقميًا كان أو ماديًا — كود QR قابل للمسح،
               يتولّد تلقائيًا ويبقى متزامنًا مع كتالوجك الحي. بدون تصدير، بدون أدوات خارجية.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -136,8 +140,8 @@ export default async function ArabicHome() {
         <h2 className="mb-8 text-center font-display text-2xl font-bold">كيف يعمل</h2>
         <div className="grid gap-6 sm:grid-cols-3">
           {[
-            { step: "١", title: "ثبّت رمز", body: "بضغطة واحدة من متجر تطبيقات سلة. بدون شاشات إعداد، بدون تهيئة." },
-            { step: "٢", title: "أضف أو عدّل منتجًا", body: "أي شيء تفعله في سلة — رمز يراقب كتالوجك في الخلفية." },
+            { step: "١", title: "ثبّت رمز", body: "بضغطة واحدة من متجر تطبيقات متجرك. بدون شاشات إعداد، بدون تهيئة." },
+            { step: "٢", title: "أضف أو عدّل منتجًا", body: "أي شيء تفعله في لوحة تحكم متجرك — رمز يراقب كتالوجك في الخلفية." },
             { step: "٣", title: "احصل على كود QR تلقائيًا", body: "يظهر في لوحة رمز، جاهز للطباعة أو التحميل أو المسح." },
           ].map((s) => (
             <div key={s.step} className="rounded-brand border-[3px] border-ink bg-white p-5 shadow-brand">
@@ -156,9 +160,9 @@ export default async function ArabicHome() {
         <div className="mx-auto max-w-[1100px] px-6 py-14">
           <h2 className="mb-2 text-center font-display text-2xl font-bold">ما الذي ستراه</h2>
           <p className="mx-auto mb-8 max-w-[520px] text-center text-sm text-ink/60">
-            شاشة واحدة في لوحة تحكم سلة. كل منتج، كود QR الخاص به، وعدد مرات مسحه.
+            شاشة واحدة في لوحة تحكم متجرك. كل منتج، كود QR الخاص به، وعدد مرات مسحه.
           </p>
-          <BrowserFrame url="yourstore.salla.sa/admin/apps/ramz" rtl>
+          <BrowserFrame url="yourstore.com/admin/apps/ramz" rtl>
             <div className="grid gap-4 sm:grid-cols-3">
               {DEMO_PRODUCTS.map((p, i) => (
                 <div key={p.name} className="rounded-brand border-[3px] border-ink bg-white p-4 shadow-brand">
@@ -198,6 +202,42 @@ export default async function ArabicHome() {
         </div>
       </section>
 
+      {/* See it in action */}
+      <section className="border-y-[3px] border-ink bg-paper">
+        <div className="mx-auto max-w-[1100px] px-6 py-14">
+          <h2 className="mb-2 text-center font-display text-2xl font-bold">شاهده على أرض الواقع</h2>
+          <p className="mx-auto mb-10 max-w-[520px] text-center text-sm text-ink/60">
+            ليس مجرد صورة مسطحة في لوحة تحكم — هذا شكل الكود فعليًا في العالم الحقيقي.
+          </p>
+          <div className="grid gap-8 sm:grid-cols-3">
+            <div className="text-center">
+              <PhoneFrame qrDataUrl={demoQrs[0]} label="مسح عبر الجوال" />
+              <p className="mt-4 text-sm font-semibold">مسح عبر الجوال</p>
+              <p className="text-xs text-ink/60">وجّه الكاميرا نحوه، وستصل مباشرة لصفحة المنتج.</p>
+            </div>
+            <div className="text-center">
+              <FlyerMock qrDataUrl={demoQrs[0]} scanLabel="امسح لتشتري" />
+              <p className="mt-4 text-sm font-semibold">على ملصق أو بوستر</p>
+              <p className="text-xs text-ink/60">اطبعه على عبوة، بوستر، أو بطاقة عمل.</p>
+            </div>
+            <div className="text-center">
+              <div className="mx-auto flex w-[150px] items-center justify-center gap-3">
+                <div className="text-center">
+                  <img src={demoQrs[0]} alt="كود الباقة الأساسية" className="h-16 w-16 rounded border-2 border-ink" />
+                  <p className="mt-1 font-mono text-[10px] text-ink/50">أساسي</p>
+                </div>
+                <div className="text-center">
+                  <img src={brandedQr} alt="كود بريميوم بألوان العلامة" className="h-16 w-16 rounded border-2 border-ink" />
+                  <p className="mt-1 font-mono text-[10px] text-accent-dark">بريميوم</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm font-semibold">تصميم بألوانك</p>
+              <p className="text-xs text-ink/60">نفس الكود، بألوانك، في الباقة المميزة.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing */}
       <section className="border-y-[3px] border-ink bg-white">
         <div className="mx-auto max-w-[1100px] px-6 py-14">
@@ -232,7 +272,7 @@ export default async function ArabicHome() {
             اجعل كل منتج قابلاً للمسح.
           </h2>
           <p className="mx-auto mb-6 max-w-[440px] text-sm text-white/80">
-            ثبّت رمز من متجر تطبيقات سلة، وسيبدأ العمل من أول مرة تلمس فيها كتالوجك.
+            ثبّت رمز، وسيبدأ العمل من أول مرة تلمس فيها كتالوجك.
           </p>
           <a
             href={SALLA_INSTALL_URL}
@@ -245,9 +285,9 @@ export default async function ArabicHome() {
 
       {/* Footer */}
       <footer>
-        <div className="mx-auto flex max-w-[1100px] flex-col items-center gap-3 px-6 py-8 text-center sm:flex-row sm:justify-between sm:text-right">
+        <div className="mx-auto flex max-w-[1100px] flex-col items-center gap-6 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
           <Logo />
-          <div className="flex flex-col items-center gap-1 sm:items-start">
+          <div className="flex flex-col items-center gap-1 text-center sm:items-start sm:text-left">
             <a href="/" className="font-mono text-xs text-ink/50 underline hover:text-ink">
               English
             </a>
@@ -255,6 +295,7 @@ export default async function ArabicHome() {
               تتم إدارة الفوترة عبر سلة. غير تابع لسلة أو معتمد منها.
             </p>
           </div>
+          <BrickSignature />
         </div>
       </footer>
     </div>
