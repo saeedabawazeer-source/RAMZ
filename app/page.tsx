@@ -1,9 +1,12 @@
 import { Smartphone, Package, Megaphone, Zap, Download, BarChart3, Palette } from "lucide-react";
-import { generateQrDataUrl } from "@/lib/qr";
+import { generateQrDataUrl, generateBrandedQrDataUrl } from "@/lib/qr";
 import { Logo } from "@/components/brand/Logo";
 import { Stamp } from "@/components/ui/Stamp";
 import { BrowserFrame } from "@/components/ui/BrowserFrame";
 import { QrMotif } from "@/components/brand/QrMotif";
+import { PhoneFrame } from "@/components/ui/PhoneFrame";
+import { FlyerMock } from "@/components/ui/FlyerMock";
+import { BrickSignature } from "@/components/brand/BrickSignature";
 
 // Public marketing page — this is what a merchant sees if they land here from
 // outside the Salla App Store (shared link, search, etc). The actual app UI
@@ -44,6 +47,7 @@ const FEATURES = [
 
 export default async function Home() {
   const demoQrs = await Promise.all(DEMO_PRODUCTS.map((p) => generateQrDataUrl(p.url)));
+  const brandedQr = await generateBrandedQrDataUrl(DEMO_PRODUCTS[0].url);
 
   return (
     <div className="min-h-screen overflow-x-clip">
@@ -70,14 +74,14 @@ export default async function Home() {
         <QrMotif className="pointer-events-none absolute -right-6 -top-6 h-40 w-40 text-teal/10 sm:h-56 sm:w-56" />
         <div className="relative grid gap-10 sm:grid-cols-2 sm:items-center">
           <div>
-            <Stamp className="mb-5">Salla app</Stamp>
+            <Stamp className="mb-5">Zero setup</Stamp>
             <h1 className="mb-4 font-display text-4xl font-bold leading-[1.05] sm:text-5xl">
               Every product, one scan away.
             </h1>
             <p className="mb-6 text-base leading-relaxed text-ink/70 sm:text-lg">
-              Ramz gives every product in your Salla store — physical or digital — a scannable QR
-              code, generated automatically and kept in sync with your live catalog. No exporting,
-              no third-party tools.
+              Ramz gives every product in your store — physical or digital — a scannable QR code,
+              generated automatically and kept in sync with your live catalog. No exporting, no
+              third-party tools.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
@@ -133,8 +137,8 @@ export default async function Home() {
         <h2 className="mb-8 text-center font-display text-2xl font-bold">How it works</h2>
         <div className="grid gap-6 sm:grid-cols-3">
           {[
-            { step: "1", title: "Install Ramz", body: "One click from the Salla App Store. No setup screens, no configuration." },
-            { step: "2", title: "Add or edit a product", body: "Anything you do in Salla — Ramz is just watching your catalog in the background." },
+            { step: "1", title: "Install Ramz", body: "One click from your store's app marketplace. No setup screens, no configuration." },
+            { step: "2", title: "Add or edit a product", body: "Anything you do in your store's admin — Ramz is just watching your catalog in the background." },
             { step: "3", title: "Get a QR, automatically", body: "It shows up in your Ramz dashboard, ready to print, download, or scan." },
           ].map((s) => (
             <div key={s.step} className="rounded-brand border-[3px] border-ink bg-white p-5 shadow-brand">
@@ -153,10 +157,10 @@ export default async function Home() {
         <div className="mx-auto max-w-[1100px] px-6 py-14">
           <h2 className="mb-2 text-center font-display text-2xl font-bold">What you&rsquo;ll see</h2>
           <p className="mx-auto mb-8 max-w-[520px] text-center text-sm text-ink/60">
-            One screen in your Salla dashboard. Every product, its QR code, and how many times it&rsquo;s
+            One screen in your store dashboard. Every product, its QR code, and how many times it&rsquo;s
             been scanned.
           </p>
-          <BrowserFrame url="yourstore.salla.sa/admin/apps/ramz">
+          <BrowserFrame url="yourstore.com/admin/apps/ramz">
             <div className="grid gap-4 sm:grid-cols-3">
               {DEMO_PRODUCTS.map((p, i) => (
                 <div key={p.name} className="rounded-brand border-[3px] border-ink bg-white p-4 shadow-brand">
@@ -196,6 +200,43 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* See it in action */}
+      <section className="border-y-[3px] border-ink bg-paper">
+        <div className="mx-auto max-w-[1100px] px-6 py-14">
+          <h2 className="mb-2 text-center font-display text-2xl font-bold">See it in action</h2>
+          <p className="mx-auto mb-10 max-w-[520px] text-center text-sm text-ink/60">
+            Not just a flat image in a dashboard — here&rsquo;s what a code actually looks like out
+            in the world.
+          </p>
+          <div className="grid gap-8 sm:grid-cols-3">
+            <div className="text-center">
+              <PhoneFrame qrDataUrl={demoQrs[0]} label="Scan on a phone" />
+              <p className="mt-4 text-sm font-semibold">Scan on a phone</p>
+              <p className="text-xs text-ink/60">Point a camera at it, land straight on the product.</p>
+            </div>
+            <div className="text-center">
+              <FlyerMock qrDataUrl={demoQrs[0]} scanLabel="Scan to shop" />
+              <p className="mt-4 text-sm font-semibold">On a flyer or poster</p>
+              <p className="text-xs text-ink/60">Print it on packaging, a poster, or a business card.</p>
+            </div>
+            <div className="text-center">
+              <div className="mx-auto flex w-[150px] items-center justify-center gap-3">
+                <div className="text-center">
+                  <img src={demoQrs[0]} alt="Base plan QR" className="h-16 w-16 rounded border-2 border-ink" />
+                  <p className="mt-1 font-mono text-[10px] text-ink/50">Base</p>
+                </div>
+                <div className="text-center">
+                  <img src={brandedQr} alt="Premium branded QR" className="h-16 w-16 rounded border-2 border-ink" />
+                  <p className="mt-1 font-mono text-[10px] text-accent-dark">Premium</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm font-semibold">Branded styling</p>
+              <p className="text-xs text-ink/60">Same code, your color, on the Premium plan.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing */}
       <section className="border-y-[3px] border-ink bg-white">
         <div className="mx-auto max-w-[1100px] px-6 py-14">
@@ -230,8 +271,7 @@ export default async function Home() {
             Make every product scannable.
           </h2>
           <p className="mx-auto mb-6 max-w-[440px] text-sm text-white/80">
-            Install Ramz from the Salla App Store and it starts working the next time you touch your
-            catalog.
+            Install Ramz and it starts working the next time you touch your catalog.
           </p>
           <a
             href={SALLA_INSTALL_URL}
@@ -244,9 +284,9 @@ export default async function Home() {
 
       {/* Footer */}
       <footer>
-        <div className="mx-auto flex max-w-[1100px] flex-col items-center gap-3 px-6 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
+        <div className="mx-auto flex max-w-[1100px] flex-col items-center gap-6 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
           <Logo />
-          <div className="flex flex-col items-center gap-1 sm:items-end">
+          <div className="flex flex-col items-center gap-1 text-center sm:items-end sm:text-right">
             <a href="/ar" className="font-mono text-xs text-ink/50 underline hover:text-ink">
               العربية
             </a>
@@ -254,6 +294,7 @@ export default async function Home() {
               Billed and managed through Salla. Not affiliated with or endorsed by Salla.
             </p>
           </div>
+          <BrickSignature />
         </div>
       </footer>
     </div>

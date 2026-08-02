@@ -8,9 +8,9 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 const arabic = Cairo({ subsets: ["arabic", "latin"], variable: "--font-arabic" });
 
 export const metadata = {
-  title: "Ramz — QR codes for every product on your Salla store",
+  title: "Ramz — QR codes for every product in your store",
   description:
-    "Ramz auto-generates a scannable QR code for every product in your Salla store, kept in sync with your catalog. Bulk export, scan tracking, and branded styling.",
+    "Ramz auto-generates a scannable QR code for every product in your store, kept in sync with your catalog. Bulk export, scan tracking, and branded styling.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
