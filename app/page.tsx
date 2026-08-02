@@ -99,10 +99,11 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Hero visual: one product card, matching the real dashboard */}
+          {/* Hero visual: one product card, matching the real dashboard.
+              Deliberately no raw URL here — a plain product name + code
+              reads as "this is the product," not as a link dump. */}
           <div className="rotate-1 rounded-brand border-[4px] border-ink bg-white p-5 shadow-brand-accent">
-            <div className="mb-1 text-sm font-semibold">{DEMO_PRODUCTS[0].name}</div>
-            <div className="mb-3 truncate font-mono text-xs text-teal underline">{DEMO_PRODUCTS[0].url}</div>
+            <div className="mb-3 text-sm font-semibold">{DEMO_PRODUCTS[0].name}</div>
             <img src={demoQrs[0]} alt="Example QR code" className="mb-3 h-40 w-40 rounded border-2 border-ink" />
             <span className="rounded bg-teal/10 px-2 py-1 font-mono text-[11px] text-teal-dark">
               {DEMO_PRODUCTS[0].scans} scans
@@ -164,8 +165,7 @@ export default async function Home() {
             <div className="grid gap-4 sm:grid-cols-3">
               {DEMO_PRODUCTS.map((p, i) => (
                 <div key={p.name} className="rounded-brand border-[3px] border-ink bg-white p-4 shadow-brand">
-                  <div className="mb-1 text-sm font-semibold">{p.name}</div>
-                  <div className="mb-3 truncate font-mono text-xs text-teal underline">{p.url}</div>
+                  <div className="mb-3 text-sm font-semibold">{p.name}</div>
                   <img src={demoQrs[i]} alt={`QR code for ${p.name}`} className="mb-2 h-28 w-28 rounded border-2 border-ink" />
                   <span className="rounded bg-teal/10 px-2 py-1 font-mono text-[11px] text-teal-dark">
                     {p.scans} scans
@@ -195,6 +195,13 @@ export default async function Home() {
                 )}
               </div>
               <p className="text-sm text-ink/70">{f.body}</p>
+              {f.title === "Branded styling" && (
+                <div className="mt-3 flex items-center gap-2 border-t border-ink/10 pt-3">
+                  <img src={demoQrs[0]} alt="Base plan QR" className="h-9 w-9 rounded border-2 border-ink" />
+                  <span className="text-ink/30" aria-hidden="true">→</span>
+                  <img src={brandedQr} alt="Premium branded QR" className="h-9 w-9 rounded border-2 border-ink" />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -204,11 +211,11 @@ export default async function Home() {
       <section className="border-y-[3px] border-ink bg-paper">
         <div className="mx-auto max-w-[1100px] px-6 py-14">
           <h2 className="mb-2 text-center font-display text-2xl font-bold">See it in action</h2>
-          <p className="mx-auto mb-10 max-w-[520px] text-center text-sm text-ink/60">
+          <p className="mx-auto mb-10 max-w-[440px] text-center text-sm text-ink/60">
             Not just a flat image in a dashboard — here&rsquo;s what a code actually looks like out
             in the world.
           </p>
-          <div className="grid gap-8 sm:grid-cols-3">
+          <div className="mx-auto grid max-w-[420px] gap-10 sm:grid-cols-2">
             <div className="text-center">
               <PhoneFrame qrDataUrl={demoQrs[0]} label="Scan on a phone" />
               <p className="mt-4 text-sm font-semibold">Scan on a phone</p>
@@ -218,20 +225,6 @@ export default async function Home() {
               <FlyerMock qrDataUrl={demoQrs[0]} scanLabel="Scan to shop" />
               <p className="mt-4 text-sm font-semibold">On a flyer or poster</p>
               <p className="text-xs text-ink/60">Print it on packaging, a poster, or a business card.</p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto flex w-[150px] items-center justify-center gap-3">
-                <div className="text-center">
-                  <img src={demoQrs[0]} alt="Base plan QR" className="h-16 w-16 rounded border-2 border-ink" />
-                  <p className="mt-1 font-mono text-[10px] text-ink/50">Base</p>
-                </div>
-                <div className="text-center">
-                  <img src={brandedQr} alt="Premium branded QR" className="h-16 w-16 rounded border-2 border-ink" />
-                  <p className="mt-1 font-mono text-[10px] text-accent-dark">Premium</p>
-                </div>
-              </div>
-              <p className="mt-4 text-sm font-semibold">Branded styling</p>
-              <p className="text-xs text-ink/60">Same code, your color, on the Premium plan.</p>
             </div>
           </div>
         </div>
