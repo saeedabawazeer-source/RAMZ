@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listOrderItems, extractDigitalCode } from "@/lib/salla";
-import { generateQrDataUrl, generateBarcodeDataUrl } from "@/lib/qr";
-import { saveMerchantToken, getMerchantToken, saveGeneratedCode } from "@/lib/store";
+import { listOrderItems, extractDigitalCode, getProduct, resolveProductUrl } from "@/lib/salla";
+import { generateQrDataUrl, generateBarcodeDataUrl, generateBrandedQrDataUrl } from "@/lib/qr";
+import { saveMerchantToken, getMerchantToken, saveGeneratedCode, saveProductQr, getProductQr } from "@/lib/store";
+
+/** Public base URL this app is deployed at — needed to build the short scan-tracking link a QR encodes. */
+const APP_URL = process.env.APP_URL ?? "https://ramz-production-0c82.up.railway.app";
 
 /**
  * Single webhook endpoint that receives every subscribed event from Salla.
@@ -12,19 +15,21 @@ import { saveMerchantToken, getMerchantToken, saveGeneratedCode } from "@/lib/st
  *      This is how Easy Mode delivers the access_token/refresh_token after
  *      install (and again on each auto-refresh) — see docs/salla-setup.md.
  *
- *   2. Store Events -> an Orders event fired when a digital product is paid
- *      for. Salla's event picker in the portal lists the exact available
- *      names (they change over time) — pick the "order paid"/"completed"
- *      status event, or use Conditional Webhooks
- *      (https://docs.salla.dev/421120m0) to filter order.status.updated to
- *      just the paid/completed status so this doesn't fire on unpaid orders.
- *      CONFIRM the exact event name in your portal before relying on this.
+ *   2. Store Events -> "product.created" and "product.updated". This is the
+ *      app's actual core loop: every product a merchant adds or edits gets
+ *      its QR (re)generated automatically, so the catalog and the QR codes
+ *      never drift apart. Needs the `products.read` scope.
+ *
+ *   3. (Legacy, optional) Store Events -> an Orders event fired when a
+ *      digital product is paid for, if you still want per-order digital-code
+ *      QR/barcodes from the original scope. Not required for the core
+ *      product-QR feature above.
  *
  * Security strategy for this app is set to "Token" in the Partners Portal
-  * (App > Webhooks/Notifications). Salla sends the secret key value back in
-   * the Authorization header (sometimes prefixed with "Bearer "), so we just
-    * need an exact string match against SALLA_WEBHOOK_SECRET.
-     */
+ * (App > Webhooks/Notifications). Salla sends the secret key value back in
+ * the Authorization header (sometimes prefixed with "Bearer "), so we just
+ * need an exact string match against SALLA_WEBHOOK_SECRET.
+ */
 function isVerifiedWebhook(req: NextRequest, _rawBody: string): boolean {
   const secret = process.env.SALLA_WEBHOOK_SECRET;
   if (!secret) return process.env.NODE_ENV !== "production"; // allow through in local dev only
@@ -32,7 +37,6 @@ function isVerifiedWebhook(req: NextRequest, _rawBody: string): boolean {
   const provided = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
   return provided === secret;
 }
-
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
@@ -111,6 +115,57 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, processed: items.length });
     } catch (err) {
       console.error("Failed to process order webhook", { orderId, storeId, err });
+      return NextResponse.json({ error: "upstream_failure" }, { status: 502 });
+    }
+  }
+
+  // Primary path: a product was created or edited. Generate (or regenerate)
+  // its QR code so it's always in sync with the live catalog — this is the
+  // core "auto-generate + auto-updates when products change" behavior.
+  if (event === "product.created" || event === "product.updated") {
+    const storeId = String(payload.merchant);
+    const token = await getMerchantToken(storeId);
+    if (!token) return NextResponse.json({ error: "store not installed" }, { status: 404 });
+
+    const productId = payload.data?.id;
+    if (!productId) return NextResponse.json({ ok: true });
+
+    try {
+      const product = await getProduct(token.accessToken, productId);
+      const productUrl = resolveProductUrl(product);
+      if (!productUrl) {
+        // Product has no live storefront URL yet (e.g. still a draft) —
+        // nothing to encode. Not an error, just nothing to do yet.
+        return NextResponse.json({ ok: true, skipped: "no_product_url" });
+      }
+
+      const id = `${storeId}-${productId}`;
+      // The QR encodes OUR short link, not the raw product URL directly —
+      // that's what makes scan tracking (#4) possible, since a raw Salla URL
+      // would bypass this app entirely on scan.
+      const shortLink = `${APP_URL}/api/s/${id}`;
+
+      const [qrDataUrl, brandedQrDataUrl] = await Promise.all([
+        generateQrDataUrl(shortLink),
+        token.plan === "premium" ? generateBrandedQrDataUrl(shortLink) : Promise.resolve(null),
+      ]);
+
+      const existing = await getProductQr(id);
+      await saveProductQr({
+        id,
+        storeId,
+        productId: String(productId),
+        productName: product.name,
+        productUrl,
+        qrDataUrl,
+        brandedQrDataUrl,
+        scanCount: existing?.scanCount ?? 0,
+        createdAt: existing?.createdAt ?? Date.now(),
+        updatedAt: Date.now(),
+      });
+      return NextResponse.json({ ok: true, productId });
+    } catch (err) {
+      console.error("Failed to process product webhook", { productId, storeId, err });
       return NextResponse.json({ error: "upstream_failure" }, { status: 502 });
     }
   }
